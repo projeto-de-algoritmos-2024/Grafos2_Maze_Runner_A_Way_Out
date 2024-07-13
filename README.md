@@ -16,19 +16,72 @@ Nesse contexto, surge os algoritimos para grafos ponderados, dentre eles, dois q
 
 ### Algoritimo de Dijkistra
 #### Premissas
-#### Definição Lógica
-#### Prova matemática
+  * O grafo deve ser direcionado e ponderado.
+  * As arestas devem ter pesos não negativos.
+  * É necessário um nó inicial a partir do qual as distâncias serão calculadas.
+  * Definição Lógica: encontra o menor caminho entre nós em um digrafo.
 #### Pseudo-código
+```
+Dijkstra(G, s)
+  para cada vértice v em G:
+    dist[v] := infinito
+    anterior[v] := indefinido
+  dist[s] := 0
+  Q := conjunto de todos os vértices em G
+  
+  enquanto Q não estiver vazio:
+    u := vértice em Q com dist[u] mínimo
+    remover u de Q
+    
+    para cada vizinho v de u:
+      alt := dist[u] + peso(u, v)
+      se alt < dist[v]:
+        dist[v] := alt
+        anterior[v] := u
+        
+  retornar dist[], anterior[]
+
+```
 #### Análise Assintótica
+  * Tempo: Caso use file simples, o tempo é $O(V^2)$. Com heap binário, o tempo é $O((V + E)log V)$ e, com heap de Fibonacci,
+o processo é amortizado para $O(Vlog V + E)$.
+  * Espaço: para armazenar a distâncias e os predecessores, basta **V** slots, logo: $O(V)$.
 #### Objetivo dentro do Projeto
+  * Encontrar a saida do labirinto no menor caminho possível.
 
 ### Alogritimo de Prim
 #### Premissas
-#### Definição Lógica
-#### Prova matemática
+  * O grafo deve ser conectado e ponderado.
+  * Deve ser um grafo não direcional
+  * As arestas podem eventualmente ter pesos negativos
+  * Definição Lógica: O algoritmo de Prim encontra a árvore geradora mínima de um grafo, ou seja, a subárvore que conecta todos os nós com o menor custo total possível.
 #### Pseudo-código
+```
+Prim(G, s)
+  para cada vértice u em G:
+    chave[u] := infinito
+    anterior[u] := indefinido
+  chave[s] := 0
+  Q := conjunto de todos os vértices em G
+  
+  enquanto Q não estiver vazio:
+    u := vértice em Q com chave[u] mínima
+    remover u de Q
+    
+    para cada vizinho v de u:
+      se v está em Q e peso(u, v) < chave[v]:
+        anterior[v] := u
+        chave[v] := peso(u, v)
+        
+  retornar anterior[]
+
+```
 #### Análise Assintótica
+  * Tempo: Semelhante ao Dijkstra, o Prim também depende do tipo de estrutura será utilizado para armazenar a informação.
+Caso seja utilizado fila simples, o tempo é $O(V^2)$;  com heap binário, $O((V + E) log V)$ e, com heap Fibonacci, $O(E + VlogV)$.
+  * Espaço: o espaço necessário também é $O(V)$.
 #### Objetivo dentro do Projeto
+  * Assim como na mitologia graga, o objetivo desse algoritimo é fazer o que Dédalo fez, construir o labirinto.
 
 ## Screenshots
 Adicione 3 ou mais screenshots do projeto em funcionamento.
