@@ -7,7 +7,7 @@
 |Matrícula | Aluno |
 | -- | -- |
 | 22/1008786  |  Mateus Villela Consorte |
-| xx/xxxxxx  |  xxxx xxxx xxxxx |
+| 22/1008679 |  Pablo Serra Carvalho |
 
 ## Sobre 
 A palavra “labirinto” tem origem no latim “labyrinthus”, embora sua raiz mais antiga venha do grego. Essa palavra descreve um espaço artificial com várias passagens e caminhos, projetado para confundir as pessoas e dificultar a busca pela saída. Os labirintos existem há cerca de 4.000 anos e estão presentes em muitas religiões e culturas. Um dos mais famosos é o Labirinto de Creta, construído pelo artesão Dédalo a pedido do rei Minos para aprisionar o Minotauro. Essa lenda grega representa o labirinto como um lugar de confusão e perigo, onde é fácil se perder e difícil encontrar uma saída. Assim, emerge uma intrigantes questões: como poderia achar o caminho de qualquer labirinto solucionável? como garantir que ele seja o melhor caminho, se possível? E mais, como poderia ser gerado um labirinto e garantir que seja solucuonável?
