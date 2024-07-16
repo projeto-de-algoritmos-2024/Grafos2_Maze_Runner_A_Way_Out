@@ -91,6 +91,8 @@ Confira o código [aqui](https://github.com/projeto-de-algoritmos-2024/Grafos2_M
 https://github.com/user-attachments/assets/d0574e0b-6606-4869-8db5-0d9b1778a1f3
 
 ## Versão 2
+Confira o código [aqui](https://github.com/projeto-de-algoritmos-2024/Grafos2_Maze_Runner_A_Way_Out/blob/master/labirito_v2.py)
+---------------------------------------
 https://github.com/user-attachments/assets/8f90a6f5-de7f-46da-986b-4d71e719421f
 
 ## Versão 1 e versão 2
