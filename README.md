@@ -1,6 +1,6 @@
 # Maze Runner: a Way Out
 
-**Número da Lista**: X<br>
+**Número da Lista**: 29<br>
 **Conteúdo da Disciplina**: Grafos 2<br>
 
 ## Alunos
