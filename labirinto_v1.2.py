@@ -5,7 +5,7 @@ import heapq
 # Configurações
 RESOLUTION = 720
 DIM = 10
-LENGTH = RESOLUTION // DIM
+LENGTH = (RESOLUTION // DIM)-2 # Ajuste para adicionar a borda
 BUTTON_WIDTH = 200
 BUTTON_HEIGHT = 50
 BUTTON_X = (RESOLUTION - BUTTON_WIDTH) // 3
@@ -171,6 +171,7 @@ class Graph:
         for edge in start_vertex.get_edges():
             if edge.end_vertex == end_vertex:
                 edge.is_wall = False
+                #print(f"removido a parede entre {start_vertex_id} e {end_vertex_id}")
         for edge in end_vertex.get_edges():
             if edge.end_vertex == start_vertex:
                 edge.is_wall = False
@@ -202,6 +203,8 @@ class Dijkstra:
 
         while not pq.empty():
             vertex = pq.get()
+            if vertex.visited:
+                continue
             vertex.visited = True
             self.visited.append(vertex)
             if vertex == self.target:
@@ -271,10 +274,10 @@ def coordinates(id):
         tuple: Uma tupla (x, y) com as coordenadas da célula.
     """
     x = id % LENGTH
-    y = id // LENGTH
+    y = (id-x) // LENGTH
     return (x, y)
 
-def draw_cell(screen, x, y, walls):
+def draw_cell(screen, x, y, walls, maze_x, maze_y):
     """Desenha uma célula na grade.
     
     Args:
@@ -282,60 +285,72 @@ def draw_cell(screen, x, y, walls):
         x (int): A coordenada x da célula.
         y (int): A coordenada y da célula.
         walls (list): Uma lista de booleans indicando se há paredes nas direções [topo, direita, baixo, esquerda].
+        maze_x (int): A coordenada x do canto superior esquerdo do labirinto.
+        maze_y (int): A coordenada y do canto superior esquerdo do labirinto.
     """
-    x = x * DIM
-    y = y * DIM
+    x = (x * DIM) + maze_x
+    y = (y * DIM) + maze_y
     if walls[0]:  # Topo
         pygame.draw.line(screen, BLACK, (x, y), (x + DIM, y))
     if walls[1]:  # Direita
-        pygame.draw.line(screen, BLACK, (x + DIM, y), (x + DIM, y + DIM))
+        pygame.draw.line(screen, RED, (x + DIM, y), (x + DIM, y + DIM))
     if walls[2]:  # Baixo
         pygame.draw.line(screen, BLACK, (x, y + DIM), (x + DIM, y + DIM))
     if walls[3]:  # Esquerda
-        pygame.draw.line(screen, BLACK, (x, y), (x, y + DIM))
+        pygame.draw.line(screen, RED, (x, y), (x, y + DIM))
+    
+    #print(f"Cell ({x//DIM}, {y//DIM}): Walls - {walls}")
 
-def draw_grid(screen, graph):
+def draw_grid(screen, graph, maze_x, maze_y):
     """Desenha a grade na tela.
     
     Args:
         screen (pygame.Surface): A superfície da tela onde a grade será desenhada.
         graph (Graph): O grafo que representa a grade.
+        maze_x (int): A coordenada x do canto superior esquerdo do labirinto.
+        maze_y (int): A coordenada y do canto superior esquerdo do labirinto.
     """
     for y in range(LENGTH):
         for x in range(LENGTH):
             current = graph.get_vertex(get_index(x, y))
-            walls = [True, True, True, True]
             neighbors = get_neighbors_coordinates(x, y)
+            walls = [True, True, True, True]
+
             for i, (nx, ny) in enumerate(neighbors):
                 neighbor_id = get_index(nx, ny)
                 for edge in current.get_edges():
                     if edge.end_vertex.id == neighbor_id and not edge.is_wall:
                         walls[i] = False
+            
+            draw_cell(screen, x, y, walls, maze_x, maze_y)
+            #print(f"Cell ({x}, {y}) - Neighbors: {neighbors}, Walls: {walls}")
 
-            draw_cell(screen, x, y, walls)
-
-def draw_path(screen, path, color):
+def draw_path(screen, path, color, maze_x, maze_y):
     """Desenha um caminho na grade.
     
     Args:
         screen (pygame.Surface): A superfície da tela onde o caminho será desenhado.
         path (list): Uma lista de vértices que representam o caminho.
         color (tuple): A cor do caminho.
+        maze_x (int): A coordenada x do canto superior esquerdo do labirinto.
+        maze_y (int): A coordenada y do canto superior esquerdo do labirinto.
     """
     for vertex in path:
         x, y = coordinates(vertex.id)
-        pygame.draw.rect(screen, color, (x * DIM, y * DIM, DIM, DIM))
+        pygame.draw.rect(screen, color, ((x * DIM) + maze_x, (y * DIM) + maze_y, DIM, DIM))
 
-def draw_start_and_end(screen):
+def draw_start_and_end(screen, maze_x, maze_y):
     """Desenha os pontos de início e fim na grade.
     
     Args:
         screen (pygame.Surface): A superfície da tela onde os pontos serão desenhados.
+        maze_x (int): A coordenada x do canto superior esquerdo do labirinto.
+        maze_y (int): A coordenada y do canto superior esquerdo do labirinto.
     """
     start_x, start_y = coordinates(0)
     end_x, end_y = coordinates(LENGTH * LENGTH - 1)
-    pygame.draw.rect(screen, RED, (start_x * DIM, start_y * DIM, DIM, DIM))
-    pygame.draw.rect(screen, RED, (end_x * DIM, end_y * DIM, DIM, DIM))
+    pygame.draw.rect(screen, PURPLE, ((start_x * DIM) + maze_x, (start_y * DIM) + maze_y, DIM, DIM))
+    pygame.draw.rect(screen, RED, ((end_x * DIM) + maze_x, (end_y * DIM) + maze_y, DIM, DIM))
 
 def draw_button(screen, text, rect, color, text_color):
     """Desenha um botão na tela.
@@ -381,6 +396,20 @@ def create_maze(graph):
     for vertex in graph.vertices.values():
         vertex.visited = False
 
+def draw_borders(screen, maze_x, maze_y):
+    """Desenha as bordas ao redor do labirinto.
+    
+    Args:
+        screen (pygame.Surface): A superfície da tela onde as bordas serão desenhadas.
+        maze_x (int): A coordenada x do canto superior esquerdo do labirinto.
+        maze_y (int): A coordenada y do canto superior esquerdo do labirinto.
+    """
+    # Desenha as bordas
+    pygame.draw.line(screen, BLACK, (maze_x, maze_y), (maze_x + LENGTH * DIM, maze_y))  # Topo
+    pygame.draw.line(screen, BLACK, (maze_x, maze_y), (maze_x, maze_y + LENGTH * DIM))  # Esquerda
+    pygame.draw.line(screen, BLACK, (maze_x + LENGTH * DIM, maze_y), (maze_x + LENGTH * DIM, maze_y + LENGTH * DIM))  # Direita
+    pygame.draw.line(screen, BLACK, (maze_x, maze_y + LENGTH * DIM), (maze_x + LENGTH * DIM, maze_y + LENGTH * DIM))  # Baixo
+
 def main():
     """Função principal que inicializa o Pygame, cria o grafo e executa o loop principal do jogo."""
     pygame.init()
@@ -412,6 +441,10 @@ def main():
     path_index = 0
     running = True
 
+    # Posição do labirinto
+    maze_x = 0.13 * LENGTH
+    maze_y = 0.010 * RESOLUTION
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -440,20 +473,21 @@ def main():
                     path_index = 0
 
         screen.fill(WHITE)
-        draw_grid(screen, graph)
-        draw_start_and_end(screen)
+        draw_grid(screen, graph, maze_x, maze_y)
+        draw_start_and_end(screen, maze_x, maze_y)
+        draw_borders(screen, maze_x, maze_y)
         draw_button(screen, "Find the Path", button_rect_find_path, PURPLE, BLACK)
         draw_button(screen, "New Maze", button_rect_new_maze, DARK_BLUE, WHITE)
 
         if solve_maze:
-            draw_path(screen, visited[:path_index], BLUE)
-            draw_path(screen, solution[:path_index], GREEN)
+            draw_path(screen, visited[:path_index], BLUE, maze_x, maze_y)
+            draw_path(screen, solution[:path_index], GREEN, maze_x, maze_y)
 
             if path_index < len(solution):
                 path_index += 1
 
         pygame.display.flip()
-        clock.tick(30)
+        clock.tick(300)
 
     pygame.quit()
 
