@@ -86,13 +86,11 @@ Caso seja utilizado fila simples, o tempo é $O(V^2)$;  com heap binário, $O((V
 ## Screenshots
 Adicione 3 ou mais screenshots do projeto em funcionamento.
 
+https://github.com/user-attachments/assets/d0574e0b-6606-4869-8db5-0d9b1778a1f3
+
+https://github.com/user-attachments/assets/8f90a6f5-de7f-46da-986b-4d71e719421f
 
 https://github.com/user-attachments/assets/4c2be9cf-b9c1-46aa-a434-93fb244e0f23
-
-
-
-
-https://github.com/user-attachments/assets/d0574e0b-6606-4869-8db5-0d9b1778a1f3
 
 
 
