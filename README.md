@@ -85,8 +85,7 @@ Caso seja utilizado fila simples, o tempo é $O(V^2)$;  com heap binário, $O((V
 
 ## Screenshots
 Adicione 3 ou mais screenshots do projeto em funcionamento.
-[![testgit](https://github.com/user-attachments/assets/f92f921d-0326-497e-830a-e734b379751d)](https://github.com/user-attachments/assets/f4075ac0-8540-4ecc-9276-45f3a0921014
-)
+https://github.com/user-attachments/assets/f4075ac0-8540-4ecc-9276-45f3a0921014
 
 ## Instalação 
 **Linguagem**: Python<br>
