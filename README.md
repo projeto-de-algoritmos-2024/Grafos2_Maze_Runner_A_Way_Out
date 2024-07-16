@@ -87,6 +87,7 @@ Caso seja utilizado fila simples, o tempo é $O(V^2)$;  com heap binário, $O((V
 
 ## Versão 1 
 Confira o código [aqui](https://github.com/projeto-de-algoritmos-2024/Grafos2_Maze_Runner_A_Way_Out/blob/master/labirinto_v1.2.py).
+--------------------------------------
 https://github.com/user-attachments/assets/d0574e0b-6606-4869-8db5-0d9b1778a1f3
 
 ## Versão 2
