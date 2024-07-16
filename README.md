@@ -103,14 +103,34 @@ https://github.com/user-attachments/assets/4c2be9cf-b9c1-46aa-a434-93fb244e0f23
 ## Instalação 
 **Linguagem**: Python<br>
 **Framework**: (caso exista)<br>
-Descreva os pré-requisitos para rodar o seu projeto e os comandos necessários.
+
+## Requisitos
+1. Ter instalado o Python 3.12
+2. ``` pip install pygame && pip install random && pip install heapq ```
+
+## Instalação para devs
+1. Clone o repositório:
+   ```
+   git clone https://github.com/projeto-de-algoritmos-2024/Grafos2_Maze_Runner_A_Way_Out.git
+   ```
+3. Navegue até o diretório onde o projeto está:
+   ```
+   cd caminho-para-Grafos2_Maze_Runner_A_Way_Out
+   ```
+5. Execute o projeto (Versão 1):
+   ```
+   python labirinto_v1.2.py
+   ```
+7. Execute o projeto (Versão 2):
+   ```
+   python labirito_v2.py
+   ```
+
 
 ## Uso 
-Explique como usar seu projeto caso haja algum passo a passo após o comando de execução.
-
-
-## Outros 
-Quaisquer outras informações sobre seu projeto podem ser descritas abaixo.
+ Trata-se de um software simples e intuitivo para ambos os executaveis em 'dist':
+  * Há um botão de gerar novo labirinto (Prim).
+  * Há outro botão para realizar o percurso pelo labirinto (Dijkstra).
 
 
 
