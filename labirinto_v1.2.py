@@ -4,154 +4,92 @@ import heapq
 
 # Configurações
 RESOLUTION = 720
-DIM = 10
+DIM = 15
 LENGTH = RESOLUTION // DIM
 BUTTON_WIDTH = 200
 BUTTON_HEIGHT = 50
 BUTTON_X = (RESOLUTION - BUTTON_WIDTH) // 3
 BUTTON_Y = RESOLUTION + 10
-
-# Posições dos botões
 BUTTON_X_NEW_MAZE = (BUTTON_X + BUTTON_WIDTH + 10)
 
 # Cores
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-RED = (255, 0, 0)
 GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-PURPLE = (170, 125, 197)
-DARK_BLUE = (0, 0, 139)
 
 class PriorityQueue:
-    """Implementação de uma fila de prioridade usando heapq."""
-
+    """Implementação de fila de prioridade usando heapq."""
+    
     def __init__(self):
         """Inicializa a fila de prioridade."""
         self.elements = []
 
     def empty(self):
-        """Verifica se a fila de prioridade está vazia.
-        
-        Returns:
-            bool: True se a fila estiver vazia, False caso contrário.
-        """
+        """Verifica se a fila de prioridade está vazia."""
         return len(self.elements) == 0
 
     def put(self, item, priority):
-        """Adiciona um item à fila com uma determinada prioridade.
-        
-        Args:
-            item: O item a ser adicionado.
-            priority (float): A prioridade do item.
-        """
+        """Coloca um item na fila de prioridade com uma prioridade dada."""
         heapq.heappush(self.elements, (priority, item))
 
     def get(self):
-        """Remove e retorna o item com a maior prioridade.
-        
-        Returns:
-            O item com a maior prioridade.
-        """
+        """Remove e retorna o item com a menor prioridade."""
         return heapq.heappop(self.elements)[1]
 
 class Vertex:
     """Representa um vértice em um grafo."""
 
     def __init__(self, id):
-        """Inicializa um vértice.
-        
-        Args:
-            id (int): O identificador do vértice.
-        """
+        """Inicializa um vértice."""
         self.id = id
         self.edges = []
-        self.visited = False
+        self.visited = False  # Adicionado para controlar o estado de visita
         self.distance = float('inf')
         self.prev = None
 
     def add_edge(self, edge):
-        """Adiciona uma aresta ao vértice.
-        
-        Args:
-            edge (Edge): A aresta a ser adicionada.
-        """
+        """Adiciona uma aresta ao vértice."""
         self.edges.append(edge)
 
     def get_neighbors(self):
-        """Obtém os vizinhos do vértice que não são paredes.
-        
-        Returns:
-            list: Uma lista de vértices vizinhos.
-        """
+        """Obtém os vizinhos do vértice."""
         return [e.end_vertex for e in self.edges if not e.is_wall]
 
     def get_edges(self):
-        """Obtém as arestas do vértice.
-        
-        Returns:
-            list: Uma lista de arestas do vértice.
-        """
+        """Obtém as arestas do vértice."""
         return self.edges
 
     def __lt__(self, other):
-        """Compara a distância deste vértice com a de outro vértice.
-        
-        Args:
-            other (Vertex): O outro vértice a ser comparado.
-        
-        Returns:
-            bool: True se a distância deste vértice for menor que a do outro vértice.
-        """
+        """Compara as distâncias entre vértices."""
         return self.distance < other.distance
 
 class Edge:
     """Representa uma aresta em um grafo."""
-
+    
     def __init__(self, start_vertex, end_vertex):
-        """Inicializa uma aresta.
-        
-        Args:
-            start_vertex (Vertex): O vértice de início da aresta.
-            end_vertex (Vertex): O vértice de fim da aresta.
-        """
+        """Inicializa uma aresta."""
         self.start_vertex = start_vertex
         self.end_vertex = end_vertex
         self.is_wall = True
 
 class Graph:
     """Representa um grafo."""
-
+    
     def __init__(self):
         """Inicializa um grafo."""
         self.vertices = {}
+        self.exit_vertex = None
 
     def add_vertex(self, id):
-        """Adiciona um vértice ao grafo.
-        
-        Args:
-            id (int): O identificador do vértice.
-        """
+        """Adiciona um vértice ao grafo."""
         self.vertices[id] = Vertex(id)
 
     def get_vertex(self, id):
-        """Obtém um vértice do grafo.
-        
-        Args:
-            id (int): O identificador do vértice.
-        
-        Returns:
-            Vertex: O vértice correspondente ao id.
-        """
+        """Obtém um vértice do grafo."""
         return self.vertices[id]
 
     def add_edge(self, start_vertex_id, end_vertex_id):
-        """Adiciona uma aresta entre dois vértices.
-        
-        Args:
-            start_vertex_id (int): O identificador do vértice de início.
-            end_vertex_id (int): O identificador do vértice de fim.
-        """
+        """Adiciona uma aresta entre dois vértices."""
         start_vertex = self.get_vertex(start_vertex_id)
         end_vertex = self.get_vertex(end_vertex_id)
         edge = Edge(start_vertex, end_vertex)
@@ -160,41 +98,33 @@ class Graph:
         end_vertex.add_edge(reverse_edge)
 
     def remove_wall(self, start_vertex_id, end_vertex_id):
-        """Remove a parede entre dois vértices.
-        
-        Args:
-            start_vertex_id (int): O identificador do vértice de início.
-            end_vertex_id (int): O identificador do vértice de fim.
-        """
+        """Remove a parede entre dois vértices."""
         start_vertex = self.get_vertex(start_vertex_id)
         end_vertex = self.get_vertex(end_vertex_id)
-        for edge in start_vertex.get_edges():
+        for edge in start_vertex.edges:
             if edge.end_vertex == end_vertex:
                 edge.is_wall = False
-        for edge in end_vertex.get_edges():
+        for edge in end_vertex.edges:
             if edge.end_vertex == start_vertex:
                 edge.is_wall = False
+
+    def reset(self):
+        """Reseta o estado dos vértices para não visitado."""
+        for vertex in self.vertices.values():
+            vertex.visited = False
+        self.exit_vertex = self.get_vertex(get_index(LENGTH - 1, LENGTH - 1))
 
 class Dijkstra:
     """Implementação do algoritmo de Dijkstra para encontrar o caminho mais curto em um grafo."""
 
     def __init__(self, graph, target):
-        """Inicializa o algoritmo de Dijkstra.
-        
-        Args:
-            graph (Graph): O grafo no qual o algoritmo será executado.
-            target (Vertex): O vértice alvo.
-        """
+        """Inicializa o algoritmo de Dijkstra."""
         self.graph = graph
-        self.visited = []
+        self.visited = []  # Lista para armazenar os vértices visitados durante o caminho
         self.target = target
 
-    def distances(self, start_id):
-        """Calcula as distâncias mínimas do vértice inicial a todos os outros vértices.
-        
-        Args:
-            start_id (int): O identificador do vértice inicial.
-        """
+    def shortest_path(self, start_id):
+        """Calcula o caminho mais curto do vértice inicial para todos os outros vértices."""
         pq = PriorityQueue()
         start = self.graph.get_vertex(start_id)
         start.distance = 0
@@ -202,8 +132,8 @@ class Dijkstra:
 
         while not pq.empty():
             vertex = pq.get()
-            vertex.visited = True
-            self.visited.append(vertex)
+            vertex.visited = True  # Marca o vértice como visitado
+            self.visited.append(vertex)  # Adiciona o vértice à lista de visitados
             if vertex == self.target:
                 break
 
@@ -215,32 +145,17 @@ class Dijkstra:
                         pq.put(neighbor, cost)
                         neighbor.prev = vertex
 
-    def path(self, target_id):
-        """Obtém o caminho do vértice inicial ao vértice alvo.
-        
-        Args:
-            target_id (int): O identificador do vértice alvo.
-        
-        Returns:
-            list: Uma lista de vértices que representam o caminho do inicial ao alvo.
-        """
+    def path_to_target(self):
+        """Obtém o caminho do vértice inicial ao vértice alvo."""
         path = []
-        current = self.graph.get_vertex(target_id)
+        current = self.graph.get_vertex(self.target.id)
         while current:
             path.append(current)
             current = current.prev
         return path[::-1]
 
 def get_neighbors_coordinates(x, y):
-    """Obtém as coordenadas dos vizinhos de uma célula na grade.
-    
-    Args:
-        x (int): A coordenada x da célula.
-        y (int): A coordenada y da célula.
-    
-    Returns:
-        list: Uma lista de coordenadas dos vizinhos.
-    """
+    """Obtém as coordenadas dos vizinhos de uma célula na grade."""
     coordinates = [
         (x, y - 1),
         (x + 1, y),
@@ -250,117 +165,58 @@ def get_neighbors_coordinates(x, y):
     return [(x, y) for (x, y) in coordinates if 0 <= x < LENGTH and 0 <= y < LENGTH]
 
 def get_index(x, y):
-    """Obtém o índice de uma célula na grade a partir das coordenadas.
-    
-    Args:
-        x (int): A coordenada x da célula.
-        y (int): A coordenada y da célula.
-    
-    Returns:
-        int: O índice da célula.
-    """
+    """Obtém o índice de uma célula na grade a partir de suas coordenadas."""
     return x + y * LENGTH
 
 def coordinates(id):
-    """Obtém as coordenadas de uma célula na grade a partir do índice.
-    
-    Args:
-        id (int): O índice da célula.
-    
-    Returns:
-        tuple: Uma tupla (x, y) com as coordenadas da célula.
-    """
+    """Obtém as coordenadas de uma célula na grade a partir do seu índice."""
     x = id % LENGTH
     y = id // LENGTH
     return (x, y)
 
 def draw_cell(screen, x, y, walls):
-    """Desenha uma célula na grade.
-    
-    Args:
-        screen (pygame.Surface): A superfície da tela onde a célula será desenhada.
-        x (int): A coordenada x da célula.
-        y (int): A coordenada y da célula.
-        walls (list): Uma lista de booleans indicando se há paredes nas direções [topo, direita, baixo, esquerda].
-    """
-    x = x * DIM
-    y = y * DIM
-    if walls[0]:  # Topo
-        pygame.draw.line(screen, BLACK, (x, y), (x + DIM, y))
-    if walls[1]:  # Direita
-        pygame.draw.line(screen, BLACK, (x + DIM, y), (x + DIM, y + DIM))
-    if walls[2]:  # Baixo
-        pygame.draw.line(screen, BLACK, (x, y + DIM), (x + DIM, y + DIM))
-    if walls[3]:  # Esquerda
-        pygame.draw.line(screen, BLACK, (x, y), (x, y + DIM))
+    """Desenha uma célula na grade."""
+    cell_size = RESOLUTION // LENGTH
+    cell_x = x * cell_size
+    cell_y = y * cell_size
 
-def draw_grid(screen, graph):
-    """Desenha a grade na tela.
-    
-    Args:
-        screen (pygame.Surface): A superfície da tela onde a grade será desenhada.
-        graph (Graph): O grafo que representa a grade.
-    """
-    for y in range(LENGTH):
-        for x in range(LENGTH):
-            current = graph.get_vertex(get_index(x, y))
-            walls = [True, True, True, True]
-            neighbors = get_neighbors_coordinates(x, y)
-            for i, (nx, ny) in enumerate(neighbors):
-                neighbor_id = get_index(nx, ny)
-                for edge in current.get_edges():
-                    if edge.end_vertex.id == neighbor_id and not edge.is_wall:
-                        walls[i] = False
+    if len(walls) > 0 and walls[0]:  # Parede superior
+        pygame.draw.line(screen, WHITE, (cell_x, cell_y), (cell_x + cell_size, cell_y), 2)
+    if len(walls) > 1 and walls[1]:  # Parede direita
+        pygame.draw.line(screen, WHITE, (cell_x + cell_size, cell_y), (cell_x + cell_size, cell_y + cell_size), 2)
+    if len(walls) > 2 and walls[2]:  # Parede inferior
+        pygame.draw.line(screen, WHITE, (cell_x + cell_size, cell_y + cell_size), (cell_x, cell_y + cell_size), 2)
+    if len(walls) > 3 and walls[3]:  # Parede esquerda
+        pygame.draw.line(screen, WHITE, (cell_x, cell_y + cell_size), (cell_x, cell_y), 2)
 
-            draw_cell(screen, x, y, walls)
+def draw_buttons(screen, font):
+    """Desenha os botões na parte inferior da tela."""
+    button_new_maze = pygame.Rect(BUTTON_X, BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT)
+    button_find_path = pygame.Rect(BUTTON_X_NEW_MAZE, BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT)
 
-def draw_path(screen, path, color):
-    """Desenha um caminho na grade.
-    
-    Args:
-        screen (pygame.Surface): A superfície da tela onde o caminho será desenhado.
-        path (list): Uma lista de vértices que representam o caminho.
-        color (tuple): A cor do caminho.
-    """
+    pygame.draw.rect(screen, WHITE, button_new_maze)
+    pygame.draw.rect(screen, WHITE, button_find_path)
+
+    text_surface_new_maze = font.render("New Maze", True, BLACK)
+    text_surface_find_path = font.render("Find Path", True, BLACK)
+
+    screen.blit(text_surface_new_maze, (button_new_maze.centerx - text_surface_new_maze.get_width() // 2,
+                                        button_new_maze.centery - text_surface_new_maze.get_height() // 2))
+    screen.blit(text_surface_find_path, (button_find_path.centerx - text_surface_find_path.get_width() // 2,
+                                         button_find_path.centery - text_surface_find_path.get_height() // 2))
+
+def draw_path(screen, path):
+    """Desenha o caminho encontrado pelo algoritmo de Dijkstra."""
+    cell_size = RESOLUTION // LENGTH
     for vertex in path:
         x, y = coordinates(vertex.id)
-        pygame.draw.rect(screen, color, (x * DIM, y * DIM, DIM, DIM))
-
-def draw_start_and_end(screen):
-    """Desenha os pontos de início e fim na grade.
-    
-    Args:
-        screen (pygame.Surface): A superfície da tela onde os pontos serão desenhados.
-    """
-    start_x, start_y = coordinates(0)
-    end_x, end_y = coordinates(LENGTH * LENGTH - 1)
-    pygame.draw.rect(screen, RED, (start_x * DIM, start_y * DIM, DIM, DIM))
-    pygame.draw.rect(screen, RED, (end_x * DIM, end_y * DIM, DIM, DIM))
-
-def draw_button(screen, text, rect, color, text_color):
-    """Desenha um botão na tela.
-    
-    Args:
-        screen (pygame.Surface): A superfície da tela onde o botão será desenhado.
-        text (str): O texto do botão.
-        rect (pygame.Rect): O retângulo que define a posição e tamanho do botão.
-        color (tuple): A cor do botão.
-        text_color (tuple): A cor do texto do botão.
-    """
-    pygame.draw.rect(screen, color, rect)
-    font = pygame.font.Font(None, 36)
-    text_surf = font.render(text, True, text_color)
-    text_rect = text_surf.get_rect(center=rect.center)
-    screen.blit(text_surf, text_rect)
+        pygame.draw.rect(screen, GREEN, (x * cell_size + cell_size // 8, y * cell_size + cell_size // 8,
+                                         cell_size // 1, cell_size // 1))
 
 def create_maze(graph):
-    """Gera um labirinto usando o algoritmo de Prim.
-    
-    Args:
-        graph (Graph): O grafo onde o labirinto será gerado.
-    """
+    """Gera um labirinto usando o algoritmo de Prim."""
     stack = []
-    start_vertex = graph.get_vertex(0)  # Ponto de início no canto superior esquerdo
+    start_vertex = graph.get_vertex(0)  # Ponto inicial no canto superior esquerdo
     start_vertex.visited = True
     stack.append(start_vertex)
 
@@ -374,24 +230,26 @@ def create_maze(graph):
             stack.append(current)
             nx, ny = random.choice(neighbors)
             neighbor = graph.get_vertex(get_index(nx, ny))
-            graph.remove_wall(current.id, neighbor.id)
+            graph.remove_wall(current.id, neighbor.id)  # Remove parede entre atual e vizinho
             neighbor.visited = True
             stack.append(neighbor)
 
     for vertex in graph.vertices.values():
         vertex.visited = False
 
+    # Marcar a saída do labirinto
+    graph.exit_vertex = graph.get_vertex(get_index(LENGTH - 1, LENGTH - 1))
+
 def main():
-    """Função principal que inicializa o Pygame, cria o grafo e executa o loop principal do jogo."""
     pygame.init()
-    screen = pygame.display.set_mode((RESOLUTION, RESOLUTION + BUTTON_HEIGHT + 20))
+    screen = pygame.display.set_mode((RESOLUTION, RESOLUTION + BUTTON_HEIGHT))
     pygame.display.set_caption("Maze Generator and Solver")
     clock = pygame.time.Clock()
+    font = pygame.font.Font(None, 50)
 
     graph = Graph()
     for i in range(LENGTH * LENGTH):
         graph.add_vertex(i)
-
     for y in range(LENGTH):
         for x in range(LENGTH):
             current_id = get_index(x, y)
@@ -402,58 +260,59 @@ def main():
 
     create_maze(graph)
 
-    end_vertex_id = get_index(LENGTH - 1, LENGTH - 1)  # Ponto de término no canto inferior direito
-    solver = Dijkstra(graph, graph.get_vertex(end_vertex_id))
-
-    button_rect_find_path = pygame.Rect(BUTTON_X, BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT)
-    button_rect_new_maze = pygame.Rect(BUTTON_X_NEW_MAZE, BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT)
     solve_maze = False
+    find_path = False
+    dijkstra = Dijkstra(graph, graph.exit_vertex)
 
-    path_index = 0
     running = True
-
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if button_rect_find_path.collidepoint(event.pos):
-                    solver.distances(0)
-                    solution = solver.path(end_vertex_id)
-                    visited = solver.visited
-                    solve_maze = True
-                    path_index = 0
-                elif button_rect_new_maze.collidepoint(event.pos):
-                    graph = Graph()
-                    for i in range(LENGTH * LENGTH):
-                        graph.add_vertex(i)
-                    for y in range(LENGTH):
-                        for x in range(LENGTH):
-                            current_id = get_index(x, y)
-                            neighbors = get_neighbors_coordinates(x, y)
-                            for nx, ny in neighbors:
-                                neighbor_id = get_index(nx, ny)
-                                graph.add_edge(current_id, neighbor_id)
-                    create_maze(graph)
-                    solver = Dijkstra(graph, graph.get_vertex(end_vertex_id))
-                    solve_maze = False
-                    path_index = 0
+                if event.button == 1:
+                    if event.pos[0] >= BUTTON_X and event.pos[0] <= BUTTON_X + BUTTON_WIDTH and event.pos[1] >= BUTTON_Y and event.pos[1] <= BUTTON_Y + BUTTON_HEIGHT:
+                        graph = Graph()
+                        for i in range(LENGTH * LENGTH):
+                            graph.add_vertex(i)
+                        for y in range(LENGTH):
+                            for x in range(LENGTH):
+                                current_id = get_index(x, y)
+                                neighbors = get_neighbors_coordinates(x, y)
+                                for nx, ny in neighbors:
+                                    neighbor_id = get_index(nx, ny)
+                                    graph.add_edge(current_id, neighbor_id)
 
-        screen.fill(WHITE)
-        draw_grid(screen, graph)
-        draw_start_and_end(screen)
-        draw_button(screen, "Find the Path", button_rect_find_path, PURPLE, BLACK)
-        draw_button(screen, "New Maze", button_rect_new_maze, DARK_BLUE, WHITE)
+                        create_maze(graph)
+                        solve_maze = False
+                        find_path = False
 
-        if solve_maze:
-            draw_path(screen, visited[:path_index], BLUE)
-            draw_path(screen, solution[:path_index], GREEN)
+                    elif event.pos[0] >= BUTTON_X_NEW_MAZE and event.pos[0] <= BUTTON_X_NEW_MAZE + BUTTON_WIDTH and event.pos[1] >= BUTTON_Y and event.pos[1] <= BUTTON_Y + BUTTON_HEIGHT:
+                        dijkstra = Dijkstra(graph, graph.exit_vertex)
+                        solve_maze = True
+                        find_path = True
+                        visited_vertices = []
+                        dijkstra.shortest_path(0)
+                        visited_vertices = dijkstra.visited[:]  # Create a copy for iteration
 
-            if path_index < len(solution):
-                path_index += 1
+        screen.fill(BLACK)
+
+        for vertex in graph.vertices.values():
+            x, y = coordinates(vertex.id)
+            walls = []
+            for nx, ny in get_neighbors_coordinates(x, y):
+                neighbor = graph.get_vertex(get_index(nx, ny))
+                walls.append(any(e.is_wall for e in vertex.edges if e.end_vertex == neighbor))
+            draw_cell(screen, x, y, walls)
+
+        draw_buttons(screen, font)
+
+        if solve_maze and find_path:
+            if visited_vertices:
+                draw_path(screen, [visited_vertices.pop(0)])
 
         pygame.display.flip()
-        clock.tick(30)
+        clock.tick(100)  # Adjust the speed of visualization by changing the tick value
 
     pygame.quit()
 
